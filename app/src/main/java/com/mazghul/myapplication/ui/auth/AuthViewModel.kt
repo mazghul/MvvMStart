@@ -3,6 +3,8 @@ package com.mazghul.myapplication.ui.auth
 import android.view.View
 import androidx.lifecycle.ViewModel
 import com.mazghul.myapplication.data.repositories.UserRepository
+import com.mazghul.myapplication.util.ApiException
+import com.mazghul.myapplication.util.Coroutines
 
 class AuthViewModel : ViewModel() {
 
@@ -18,8 +20,20 @@ class AuthViewModel : ViewModel() {
             return
         }
 
-        var loginResponse = UserRepository().userLogin(email!!, password!!)
-        authListener?.onSuccess(loginResponse)
+
+        Coroutines.main {
+            try {
+                val response = UserRepository().userLogin(email!!, password!!)
+                response.user?.let {
+                    authListener?.onSuccess(it)
+                    return@main
+                }
+                authListener?.onFailure(response.message!!)
+            } catch (e: ApiException){
+                authListener?.onFailure(e.message!!)
+            }
+
+        }
     }
 
 }
