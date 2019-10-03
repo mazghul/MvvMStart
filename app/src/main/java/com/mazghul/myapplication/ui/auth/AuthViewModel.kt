@@ -2,6 +2,7 @@ package com.mazghul.myapplication.ui.auth
 
 import android.view.View
 import androidx.lifecycle.ViewModel
+import com.mazghul.myapplication.data.repositories.UserRepository
 
 class AuthViewModel : ViewModel() {
 
@@ -16,7 +17,9 @@ class AuthViewModel : ViewModel() {
             authListener?.onFailure("Invalid Email or password")
             return
         }
-        authListener?.onSuccess()
+
+        var loginResponse = UserRepository().userLogin(email!!, password!!)
+        authListener?.onSuccess(loginResponse)
     }
 
 }
